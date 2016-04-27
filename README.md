@@ -1,2 +1,2 @@
 # apache-storm-case-study
-Apache Storm case study
+Case study for Apache Storm
