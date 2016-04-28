@@ -1,7 +1,8 @@
-package br.com.storm.study;
+package br.com.storm.study.bolt;
 
 import java.util.Map;
 
+import br.com.storm.study.entity.CreditCard;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -11,9 +12,9 @@ import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
 /**
- * Created by lacau on 27/04/16.
+ * Created by lacau on 28/04/16.
  */
-public class MyBolt extends BaseRichBolt {
+public class CreditCardVerifyBinBolt extends BaseRichBolt {
 
     private OutputCollector collector;
 
@@ -24,13 +25,15 @@ public class MyBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple input) {
-        collector.emit(input, new Values(input.getString(0) + "!"));
+        CreditCard creditCard = (CreditCard) input.getValue(0);
+        // Validate BIN
+        creditCard.setBin("441111");
+        collector.emit(input, new Values(creditCard));
         collector.ack(input);
-        System.out.println("#######################VALUE: " + input.getString(0) + "!");
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("word"));
+        declarer.declare(new Fields("creditCard"));
     }
 }
