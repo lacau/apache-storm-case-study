@@ -38,4 +38,14 @@ public class CreditCard implements Serializable {
     public void setPersisted(boolean persisted) {
         this.persisted = persisted;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("CreditCard{");
+        sb.append("bin='").append(bin).append('\'');
+        sb.append(", sold=").append(sold);
+        sb.append(", persisted=").append(persisted);
+        sb.append('}');
+        return sb.toString();
+    }
 }

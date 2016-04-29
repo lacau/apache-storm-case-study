@@ -2,9 +2,11 @@ package br.com.storm.study.spout;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import br.com.storm.study.entity.CreditCard;
 import org.apache.storm.Config;
+import org.apache.storm.shade.org.eclipse.jetty.util.ConcurrentHashSet;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -17,6 +19,8 @@ import org.apache.storm.utils.Utils;
  * Created by lacau on 28/04/16.
  */
 public class CreditCardSpout extends BaseRichSpout {
+
+    public static Set<Class> cache = new ConcurrentHashSet<Class>();
 
     private boolean isDistributed;
 
