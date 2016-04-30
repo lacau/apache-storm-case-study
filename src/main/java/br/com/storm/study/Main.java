@@ -1,9 +1,12 @@
 package br.com.storm.study;
 
+import java.io.IOException;
+
 import br.com.storm.study.bolt.CreditCardPersistBolt;
 import br.com.storm.study.bolt.CreditCardSaleBolt;
 import br.com.storm.study.bolt.CreditCardSaveTextFileBolt;
 import br.com.storm.study.bolt.CreditCardVerifyBinBolt;
+import br.com.storm.study.entity.CreditCard;
 import br.com.storm.study.spout.CreditCardSpout;
 import org.apache.storm.Config;
 import org.apache.storm.LocalCluster;
@@ -15,9 +18,9 @@ import org.apache.storm.utils.Utils;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         TopologyBuilder builder = new TopologyBuilder();
-        builder.setSpout("creditCardSpout", new CreditCardSpout(), 10);
+        builder.setSpout("creditCardSpout", new CreditCardSpout(), 2);
         builder.setBolt("creditCardVerifyBinBolt", new CreditCardVerifyBinBolt(), 4).shuffleGrouping("creditCardSpout");
         builder.setBolt("creditCardSaleBolt", new CreditCardSaleBolt(), 4).shuffleGrouping("creditCardVerifyBinBolt");
         builder.setBolt("creditCardPersistBolt", new CreditCardPersistBolt(), 4).shuffleGrouping("creditCardSaleBolt");
@@ -27,10 +30,18 @@ public class Main {
         conf.setDebug(true);
         conf.setNumWorkers(2);
 
+        Runtime.getRuntime().exec("rm -rf log.txt");
+
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("creditCardSpout", conf, builder.createTopology());
-        Utils.sleep(2000);
+        Utils.sleep(1000);
+        for(int i = 0; i < 5; i++) {
+            CreditCard creditCard = new CreditCard(i + 1L);
+            CreditCardSpout.addTransaction(creditCard);
+        }
+        Utils.sleep(5000);
         cluster.killTopology("creditCardSpout");
         cluster.shutdown();
+        System.exit(0);
     }
 }

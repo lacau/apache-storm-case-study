@@ -9,11 +9,25 @@ public class CreditCard implements Serializable {
 
     private static final long serialVersionUID = 5381943031652064821L;
 
+    private Long id;
+
     private String bin;
 
     private boolean sold;
 
     private boolean persisted;
+
+    public CreditCard(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getBin() {
         return bin;
@@ -41,8 +55,9 @@ public class CreditCard implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("CreditCard{");
-        sb.append("bin='").append(bin).append('\'');
+        final StringBuilder sb = new StringBuilder("CreditCard{");
+        sb.append("id=").append(id);
+        sb.append(", bin='").append(bin).append('\'');
         sb.append(", sold=").append(sold);
         sb.append(", persisted=").append(persisted);
         sb.append('}');
