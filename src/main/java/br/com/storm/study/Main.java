@@ -20,7 +20,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         TopologyBuilder builder = new TopologyBuilder();
-        builder.setSpout("creditCardSpout", new CreditCardSpout(), 2);
+        builder.setSpout("creditCardSpout", new CreditCardSpout(), 10);
         builder.setBolt("creditCardVerifyBinBolt", new CreditCardVerifyBinBolt(), 4).shuffleGrouping("creditCardSpout");
         builder.setBolt("creditCardSaleBolt", new CreditCardSaleBolt(), 4).shuffleGrouping("creditCardVerifyBinBolt");
         builder.setBolt("creditCardPersistBolt", new CreditCardPersistBolt(), 4).shuffleGrouping("creditCardSaleBolt");
@@ -34,12 +34,12 @@ public class Main {
 
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("creditCardSpout", conf, builder.createTopology());
-        Utils.sleep(1000);
-        for(int i = 0; i < 5; i++) {
+        Utils.sleep(5000);
+        for(int i = 0; i < 5000; i++) {
             CreditCard creditCard = new CreditCard(i + 1L);
             CreditCardSpout.addTransaction(creditCard);
         }
-        Utils.sleep(5000);
+        Utils.sleep(20000);
         cluster.killTopology("creditCardSpout");
         cluster.shutdown();
         System.exit(0);

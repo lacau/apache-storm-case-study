@@ -55,7 +55,7 @@ public class CreditCardSpout extends BaseRichSpout {
             transactionCount++;
             final CreditCard creditCard = transactions.get(transactionCount - 1);
             collector.emit(new Values(creditCard));
-            Utils.sleep(100);
+            Utils.sleep(10);
         }
     }
 
