@@ -23,30 +23,24 @@ public class CreditCardSaveTextFileBolt extends BaseRichBolt {
 
     private OutputCollector collector;
 
-    private TopologyContext context;
-
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
-        this.context = context;
     }
 
     @Override
     public void execute(Tuple input) {
+        CreditCardSpout.incrementCount();
         CreditCard creditCard = (CreditCard) input.getValue(0);
-        if(CreditCardSpout.session.indexOf(creditCard.getId().toString() + context.getThisComponentId()) == -1) {
-            CreditCardSpout.session.add(creditCard.getId().toString() + context.getThisComponentId());
-            BufferedWriter writer = null;
-            try(FileWriter fw = new FileWriter("log.txt", true);
-                    BufferedWriter bw = new BufferedWriter(fw);
-                    PrintWriter out = new PrintWriter(bw)) {
-                out.println(toString() + " - " + creditCard.toString());
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-            collector.emit(input, new Values(creditCard));
+        BufferedWriter writer = null;
+        try(FileWriter fw = new FileWriter("log.txt", true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter out = new PrintWriter(bw)) {
+            out.println(toString() + " - " + creditCard.toString());
+        } catch(IOException e) {
+            e.printStackTrace();
         }
-
+        collector.emit(input, new Values(creditCard));
         collector.ack(input);
     }
 

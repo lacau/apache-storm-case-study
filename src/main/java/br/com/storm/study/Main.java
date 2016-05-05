@@ -34,14 +34,14 @@ public class Main {
 
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("creditCardSpout", conf, builder.createTopology());
-        Utils.sleep(5000);
-        for(int i = 0; i < 5000; i++) {
+        for(int i = 0; i < 1000; i++) {
             CreditCard creditCard = new CreditCard(i + 1L);
             CreditCardSpout.addTransaction(creditCard);
         }
         Utils.sleep(20000);
         cluster.killTopology("creditCardSpout");
         cluster.shutdown();
+        System.out.println("Bolts count: " + CreditCardSpout.boltsCount);
         System.exit(0);
     }
 }

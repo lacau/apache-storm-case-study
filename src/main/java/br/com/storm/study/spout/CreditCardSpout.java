@@ -2,8 +2,8 @@ package br.com.storm.study.spout;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import br.com.storm.study.entity.CreditCard;
 import org.apache.storm.Config;
@@ -20,15 +20,13 @@ import org.apache.storm.utils.Utils;
  */
 public class CreditCardSpout extends BaseRichSpout {
 
-    public static List<String> session = new LinkedList<String>();
+    public static Queue<CreditCard> transactionQueue = new LinkedList<CreditCard>();
 
     private boolean isDistributed;
 
     private SpoutOutputCollector collector;
 
-    private static int transactionCount = 0;
-
-    private static List<CreditCard> transactions = new LinkedList<CreditCard>();
+    public static long boltsCount = 0;
 
     public CreditCardSpout() {
         this(true);
@@ -50,17 +48,11 @@ public class CreditCardSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        // Wait for new transaction
-        while(newTransaction()) {
-            transactionCount++;
-            final CreditCard creditCard = transactions.get(transactionCount - 1);
-            collector.emit(new Values(creditCard));
-            Utils.sleep(10);
+        CreditCard transaction = transactionQueue.poll();
+        if(transaction != null) {
+            collector.emit(new Values(transaction));
         }
-    }
-
-    private boolean newTransaction() {
-        return transactionCount < transactions.size();
+        Utils.sleep(10);
     }
 
     @Override
@@ -75,6 +67,10 @@ public class CreditCardSpout extends BaseRichSpout {
     }
 
     public static void addTransaction(CreditCard creditCard) {
-        transactions.add(creditCard);
+        transactionQueue.add(creditCard);
+    }
+
+    public static synchronized void incrementCount() {
+        boltsCount++;
     }
 }
